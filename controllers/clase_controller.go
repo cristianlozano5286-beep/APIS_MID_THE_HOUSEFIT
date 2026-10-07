@@ -52,3 +52,42 @@ func (c *ClaseController) ObtenerClase(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(clase)
 }
 
+// CrearClase responde a POST /clases 
+func (c *ClaseController) CrearClase(w http.ResponseWriter, r *http.Request) {
+	var in models.ClaseDisponible
+	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+		http.Error(w, "payload JSON inválido", http.StatusBadRequest)
+		return
+	}
+
+	if in.TipoClase == "" || in.GimnasioID == 0 {
+		http.Error(w, "tipo_clase y gimnasio_id son obligatorios", http.StatusBadRequest)
+		return
+	}
+
+	creada, err := c.service.Crear(r.Context(), in)
+	if err != nil {
+		http.Error(w, "error interno al crear la clase", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(creada)
+}
+
+// EliminarClase responde a DELETE /clases/{id} 
+func (c *ClaseController) EliminarClase(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id <= 0 {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	if err := c.service.Eliminar(r.Context(), id); err != nil {
+		http.Error(w, "clase no encontrada", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
