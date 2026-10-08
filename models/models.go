@@ -4,15 +4,16 @@ import "time"
 
 
 type ClaseDisponible struct {
-	ID               int     `json:"id"`
-	GimnasioID       int     `json:"gimnasio_id"`
-	TipoClase        string  `json:"tipo_clase"`
+	ID      int     `json:"id"`
+	GimnasioID    int     `json:"gimnasio_id"`
+	TipoClase  string  `json:"tipo_clase"`
 	InstructorNombre string  `json:"instructor_nombre"`
 	InstructorID     int     `json:"instructor_id,omitempty"`
-	Hora             string  `json:"hora"`
-	Cupos            int     `json:"cupos"`
-	Duracion         string  `json:"duracion"`
-	Precio           float64 `json:"precio"`
+	Hora   string  `json:"hora"`
+	Lugar string `json:"lugar"`
+	Cupos    int     `json:"cupos"`
+	Duracion    string  `json:"duracion"`
+	Precio   float64 `json:"precio"`
 }
 
 type ReservaClase struct {

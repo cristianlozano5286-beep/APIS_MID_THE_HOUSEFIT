@@ -5,89 +5,63 @@ import (
 	"net/http"
 	"strconv"
 
-	"api_mid_the_housefit/models"
-	"api_mid_the_housefit/services"
+	"api_mid_the_house_fit/models"
+	"api_mid_the_house_fit/services"
+
+	beego "github.com/beego/beego/v2/server/web"
 )
 
-// ClaseController agrupa los handlers e inyecta la capa de negocio
 type ClaseController struct {
-	service services.ClaseService
+	beego.Controller
+	claseService   *services.ClaseService
+	reservaService *services.ReservaService
 }
 
-func NewClaseController(s services.ClaseService) *ClaseController {
-	return &ClaseController{service: s}
+func (c *ClaseController) Prepare() {
+	c.claseService = services.NewClaseService()
+	c.reservaService = services.NewReservaService()
 }
 
-// ListarClases responde a GET /clases?gimnasio_id=&tipo=
-func (c *ClaseController) ListarClases(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	gimnasioID, _ := strconv.Atoi(q.Get("gimnasio_id"))
-	tipo := q.Get("tipo")
+// @Title Listar clases
+// @Description Lista clases disponibles con filtros y paginación
+// @Param	pagina	query	int	false	"Página (default: 1)"
+// @Param	por_pagina	query	int	false	"Por página (default: 10)"
+// @Param	gimnasio_id	query	int	false	"Filtrar por gimnasio"
+// @Param	tipo_clase	query	string	false	"Filtrar por tipo de clase"
+// @Success 200 {object} models.RespuestaPaginada
+// @Failure 500 {object} models.RespuestaError
+// @router / [get]
+func (c *ClaseController) Listar() {
+	pagina, _ := strconv.Atoi(c.GetString("pagina", "1"))
+	porPagina, _ := strconv.Atoi(c.GetString("por_pagina", "10"))
+	gimnasioIDStr := c.GetString("gimnasio_id")
+	tipoClase := c.GetString("tipo_clase")
 
-	clases, err := c.service.ObtenerFiltradas(r.Context(), gimnasioID, tipo)
+	if pagina < 1 {
+		pagina = 1
+	}
+	if porPagina < 1 || porPagina > 100 {
+		porPagina = 10
+	}
+
+	filters := map[string]interface{}{}
+	if gimnasioIDStr != "" {
+		gimnasioID, _ := strconv.Atoi(gimnasioIDStr)
+		filters["gimnasio_id"] = gimnasioID
+	}
+	if tipoClase != "" {
+		filters["tipo_clase"] = tipoClase
+	}
+
+	clases, total, err := c.claseService.List(filters, pagina, porPagina)
 	if err != nil {
-		http.Error(w, "error al consultar clases", http.StatusInternalServerError)
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al listar clases", err)
+		c.ServeJSON()
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(clases)
-}
-
-// ObtenerClase responde a GET /clases/{id}
-func (c *ClaseController) ObtenerClase(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.PathValue("id")) // Go 1.22+ estándar o extractor de tu router
-	if err != nil || id <= 0 {
-		http.Error(w, "ID inválido", http.StatusBadRequest)
-		return
-	}
-
-	clase, err := c.service.ObtenerPorID(r.Context(), id)
-	if err != nil {
-		http.Error(w, "clase no encontrada", http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(clase)
-}
-
-// CrearClase responde a POST /clases 
-func (c *ClaseController) CrearClase(w http.ResponseWriter, r *http.Request) {
-	var in models.ClaseDisponible
-	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
-		http.Error(w, "payload JSON inválido", http.StatusBadRequest)
-		return
-	}
-
-	if in.TipoClase == "" || in.GimnasioID == 0 {
-		http.Error(w, "tipo_clase y gimnasio_id son obligatorios", http.StatusBadRequest)
-		return
-	}
-
-	creada, err := c.service.Crear(r.Context(), in)
-	if err != nil {
-		http.Error(w, "error interno al crear la clase", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(creada)
-}
-
-// EliminarClase responde a DELETE /clases/{id} 
-func (c *ClaseController) EliminarClase(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil || id <= 0 {
-		http.Error(w, "ID inválido", http.StatusBadRequest)
-		return
-	}
-
-	if err := c.service.Eliminar(r.Context(), id); err != nil {
-		http.Error(w, "clase no encontrada", http.StatusNotFound)
-		return
-	}
-
-	w.WriteHeader(http.StatusNoContent)
+	response := models.RespuestaPaginadaExitosa("Clases obtenidas", clases, pagina, porPagina, total)
+	c.Data["json"] = response
+	c.ServeJSON()
 }
