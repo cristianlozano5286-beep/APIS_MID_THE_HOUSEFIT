@@ -27,4 +27,7 @@ func init() {
 		),
 	)
 	beego.AddNamespace(ns)
+
+	beego.Router("/api/clases", &controllers.ClaseController{}, "get:Listar")
+	beego.Router("/api/clases/:id", &controllers.ClaseController{}, "get:Ver")
 }
