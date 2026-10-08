@@ -7,9 +7,20 @@ import (
 )
 
 func init() {
-	beego.Router("/nutricion/calcular", &controllers.NutricionController{}, "post:CalcularIMC")
-	beego.Router("/nutricion/historial", &controllers.NutricionController{}, "get:HistorialIMC")
+	ns := beego.NewNamespace("/v1",
+		beego.NSNamespace("/object",
+			beego.NSInclude(
+				&controllers.ObjectController{},
+			),
+		),
+		beego.NSNamespace("/user",
+			beego.NSInclude(
+				&controllers.UserController{},
+			),
+		),
+	)
+	beego.AddNamespace(ns)
 
-	beego.Router("/nutricion/guias", &controllers.GuiaNutricionalController{}, "get:ListarGuias;post:CrearGuia")
-	beego.Router("/nutricion/guias/:id", &controllers.GuiaNutricionalController{}, "delete:EliminarGuia")
+	beego.Router("/api/clases", &controllers.ClaseController{}, "get:Listar")
+	beego.Router("/api/clases/:id", &controllers.ClaseController{}, "get:Ver")
 }
