@@ -46,4 +46,4 @@ func (c *DashboardController) Metricas() {
 	response := models.RespuestaExitosa("Métricas obtenidas", metricas)
 	c.Data["json"] = response
 	c.ServeJSON()
-}
+}	
