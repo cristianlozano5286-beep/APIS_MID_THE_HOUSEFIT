@@ -7,9 +7,9 @@ import (
 )
 
 func init() {
-	beego.Router("/nutricion/calcular", &controllers.NutricionController{}, "post:CalcularIMC")
-	beego.Router("/nutricion/historial", &controllers.NutricionController{}, "get:HistorialIMC")
-
-	beego.Router("/nutricion/guias", &controllers.GuiaNutricionalController{}, "get:ListarGuias;post:CrearGuia")
-	beego.Router("/nutricion/guias/:id", &controllers.GuiaNutricionalController{}, "delete:EliminarGuia")
+	
+	// ==================== GUÍAS NUTRICIONALES ROUTES ====================
+	beego.Router("/api/guias-nutricionales", &controllers.GuiaNutricionalController{}, "get:ListarGuias")
+	beego.Router("/api/guias-nutricionales", &controllers.GuiaNutricionalController{}, "post:CrearGuia")
+	beego.Router("/api/guias-nutricionales/:id", &controllers.GuiaNutricionalController{}, "delete:EliminarGuia")
 }
