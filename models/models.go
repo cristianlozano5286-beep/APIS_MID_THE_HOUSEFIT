@@ -1,27 +1,29 @@
 package models
 
-import "time"
-
+import (
+	"time"
+)
 
 type ClaseDisponible struct {
-	ID      int     `json:"id"`
-	GimnasioID    int     `json:"gimnasio_id"`
-	TipoClase  string  `json:"tipo_clase"`
-	InstructorNombre string  `json:"instructor_nombre"`
-	InstructorID     int     `json:"instructor_id,omitempty"`
-	Hora   string  `json:"hora"`
-	Lugar string `json:"lugar"`
-	Cupos    int     `json:"cupos"`
-	Duracion    string  `json:"duracion"`
-	Precio   float64 `json:"precio"`
+	ID               int       `json:"id" db:"id"`
+	GimnasioID       int       `json:"gimnasio_id" db:"gimnasio_id"`
+	TipoClase        string    `json:"tipo_clase" db:"tipo_clase"`
+	InstructorNombre string    `json:"instructor_nombre" db:"instructor_nombre"`
+	InstructorID     *int      `json:"instructor_id" db:"instructor_id"`
+	Hora             string    `json:"hora" db:"hora"`
+	Cupos            int       `json:"cupos" db:"cupos"`
+	Duracion         string    `json:"duracion" db:"duracion"`
+	Precio           float64   `json:"precio" db:"precio"`
+	CreadoEn         time.Time `json:"creado_en" db:"creado_en"`
 }
 
-type ReservaClase struct {
-	ID            int       `json:"id"`
-	UsuarioCorreo string    `json:"usuario_correo"`
-	ClaseID       int       `json:"clase_id"`
-	Fecha         string    `json:"fecha"`
-	Personas      int       `json:"personas"`
-	Estado        string    `json:"estado"` 
-	CreadoEn      time.Time `json:"creado_en"`
+type ClaseDisponibleRequest struct {
+	GimnasioID       int     `json:"gimnasio_id" binding:"required,min=1"`
+	TipoClase        string  `json:"tipo_clase" binding:"required,oneof=Spinning CrossFit Yoga Funcional Boxeo Pilates"`
+	InstructorNombre string  `json:"instructor_nombre" binding:"required,min=2,max=120"`
+	InstructorID     *int    `json:"instructor_id" binding:"omitempty,min=1"`
+	Hora             string  `json:"hora" binding:"required,max=20"`
+	Cupos            int     `json:"cupos" binding:"required,min=0"`
+	Duracion         string  `json:"duracion" binding:"required,max=20"`
+	Precio           float64 `json:"precio" binding:"required,min=0"`
 }
