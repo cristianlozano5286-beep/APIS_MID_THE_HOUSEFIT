@@ -162,3 +162,38 @@ func (c *ClaseController) Eliminar() {
 		c.ServeJSON()
 		return
 	}
+	idStr := c.Ctx.Input.Param(":id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("ID inválido", err)
+		c.ServeJSON()
+		return
+	}
+
+	clase, err := c.claseService.GetByID(id)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al verificar clase", err)
+		c.ServeJSON()
+		return
+	}
+	if clase == nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusNotFound)
+		c.Data["json"] = models.RespuestaErrorGeneral("Clase no encontrada", nil)
+		c.ServeJSON()
+		return
+	}
+
+	err = c.claseService.Delete(id)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al eliminar clase", err)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Clase eliminada correctamente", nil)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
