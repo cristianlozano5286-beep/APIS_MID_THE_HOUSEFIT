@@ -143,3 +143,22 @@ func (c *ClaseController) Crear() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
+
+// @Title Eliminar clase
+// @Description Elimina una clase (solo administrador)
+// @Param	Authorization	header	string	true	"Bearer token"
+// @Param	id	path	int	true	"ID de la clase"
+// @Success 200 {object} models.RespuestaAPI
+// @Failure 401 {object} models.RespuestaError
+// @Failure 403 {object} models.RespuestaError
+// @Failure 404 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router /:id [delete]
+func (c *ClaseController) Eliminar() {
+	rol := c.Ctx.Input.GetData("usuario_rol")
+	if rol != models.RolAdministrador {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
+		c.Data["json"] = models.RespuestaErrorGeneral("Acceso denegado", nil)
+		c.ServeJSON()
+		return
+	}
