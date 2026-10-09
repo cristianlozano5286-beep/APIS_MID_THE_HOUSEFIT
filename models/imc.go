@@ -32,5 +32,27 @@ type CalcularIMCResponse struct {
 
 
 
+func CalcularCategoriaIMC(imc float64) string {
+	switch {
+	case imc < 18.5:
+		return CategoriaIMCBajoPeso
+	case imc < 25:
+		return CategoriaIMCPesoNormal
+	case imc < 30:
+		return CategoriaIMCSobrepeso
+	default:
+		return CategoriaIMCObesidad
+	}
+}
+
+func CalcularPesoIdeal(estaturaM float64) (min, max float64) {
+	min = 18.5 * estaturaM * estaturaM
+	max = 24.9 * estaturaM * estaturaM
+	return
+}
+
+
+
+
 
 
