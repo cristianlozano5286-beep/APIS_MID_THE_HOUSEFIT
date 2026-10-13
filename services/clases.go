@@ -1,4 +1,4 @@
-package services
+
 package services
 
 import (
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"api_mid_the_house_fit/models"
+	"api_mid_the_housefit/models"
 )
 
 type ClaseService struct {
