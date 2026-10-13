@@ -197,3 +197,14 @@ func (c *ClaseController) Eliminar() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
+
+// @Title Reservar clase
+// @Description Reserva una plaza en una clase
+// @Param	Authorization	header	string	true	"Bearer token"
+// @Param	body	body 	models.ReservaClaseRequest	true	"Datos de la reserva"
+// @Success 201 {object} models.RespuestaAPI
+// @Failure 400 {object} models.RespuestaError
+// @Failure 401 {object} models.RespuestaError
+// @Failure 409 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router /reservar [post]
