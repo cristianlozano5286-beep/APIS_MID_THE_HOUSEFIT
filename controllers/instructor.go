@@ -66,7 +66,83 @@ func (c *InstructorController) Listar() {
 }
 
 
+// @Title Ver instructor
+// @Description Obtiene un instructor por ID
+// @Param	id	path	int	true	"ID del instructor"
+// @Success 200 {object} models.RespuestaAPI
+// @Failure 404 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router /:id [get]
+func (c *InstructorController) Ver() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("ID inválido", err)
+		c.ServeJSON()
+		return
+	}
 
+	instructor, err := c.instructorService.GetByID(id)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al obtener instructor", err)
+		c.ServeJSON()
+		return
+	}
+
+	if instructor == nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusNotFound)
+		c.Data["json"] = models.RespuestaErrorGeneral("Instructor no encontrado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Instructor obtenido", instructor)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
+
+// @Title Crear instructor
+// @Description Crea un nuevo instructor (solo administrador)
+// @Param	Authorization	header	string	true	"Bearer token"
+// @Param	body	body 	models.InstructorRequest	true	"Datos del instructor"
+// @Success 201 {object} models.RespuestaAPI
+// @Failure 400 {object} models.RespuestaError
+// @Failure 401 {object} models.RespuestaError
+// @Failure 403 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router / [post]
+func (c *InstructorController) Crear() {
+	rol := c.Ctx.Input.GetData("usuario_rol")
+	if rol != models.RolAdministrador {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
+		c.Data["json"] = models.RespuestaErrorGeneral("Acceso denegado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	var req models.InstructorRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("Datos inválidos", err)
+		c.ServeJSON()
+		return
+	}
+
+	instructor, err := c.instructorService.Create(req)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al crear instructor", err)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Instructor creado correctamente", instructor)
+	c.Ctx.ResponseWriter.WriteHeader(http.StatusCreated)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
 
 
 
