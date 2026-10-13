@@ -60,3 +60,23 @@ func (c *UserController) Listar() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
+
+// @Title Actualizar rol
+// @Description Actualiza el rol de un usuario (solo administrador)
+// @Param	Authorization	header	string	true	"Bearer token"
+// @Param	id	path	int	true	"ID del usuario"
+// @Param	body	body 	models.ActualizarRolRequest	true	"Nuevo rol"
+// @Success 200 {object} models.RespuestaAPI
+// @Failure 400 {object} models.RespuestaError
+// @Failure 401 {object} models.RespuestaError
+// @Failure 403 {object} models.RespuestaError
+// @Failure 404 {object} models.RespuestaError
+// @router /:id/rol [put]
+func (c *UserController) ActualizarRol() {
+	rol := c.Ctx.Input.GetData("usuario_rol")
+	if rol != models.RolAdministrador {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
+		c.Data["json"] = models.RespuestaErrorGeneral("Acceso denegado", nil)
+		c.ServeJSON()
+		return
+	}
