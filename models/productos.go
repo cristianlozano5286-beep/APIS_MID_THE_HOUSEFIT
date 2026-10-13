@@ -41,3 +41,8 @@ const (
 	CategoriaImplemento     = "Implemento"
 	CategoriaRopaDeportiva  = "Ropa deportiva"
 )
+
+
+
+
+
