@@ -289,3 +289,50 @@ func (c *ClaseController) MisReservas() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
+
+// @Title Cancelar reserva
+// @Description Cancela una reserva del usuario
+// @Param	Authorization	header	string	true	"Bearer token"
+// @Param	id	path	int	true	"ID de la reserva"
+// @Success 200 {object} models.RespuestaAPI
+// @Failure 401 {object} models.RespuestaError
+// @Failure 404 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router /reservas/:id [delete]
+
+func (c *ClaseController) CancelarReserva() {
+	usuarioCorreo := c.Ctx.Input.GetData("usuario_correo")
+	if usuarioCorreo == nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+		c.Data["json"] = models.RespuestaErrorGeneral("No autenticado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	idStr := c.Ctx.Input.Param(":id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("ID inválido", err)
+		c.ServeJSON()
+		return
+	}
+
+	err = c.reservaService.Cancelar(id, usuarioCorreo.(string))
+	if err != nil {
+		if err.Error() == "reserva no encontrada o no pertenece al usuario" {
+			c.Ctx.ResponseWriter.WriteHeader(http.StatusNotFound)
+			c.Data["json"] = models.RespuestaErrorGeneral("Reserva no encontrada", err)
+			c.ServeJSON()
+			return
+		}
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al cancelar reserva", err)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Reserva cancelada correctamente", nil)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
