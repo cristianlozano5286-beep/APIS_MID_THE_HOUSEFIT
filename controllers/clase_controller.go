@@ -247,3 +247,45 @@ func (c *ClaseController) Reservar() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
+
+// @Title Mis reservas
+// @Description Obtiene las reservas del usuario autenticado
+// @Param	Authorization	header	string	true	"Bearer token"
+// @Param	pagina	query	int	false	"Página (default: 1)"
+// @Param	por_pagina	query	int	false	"Por página (default: 10)"
+// @Success 200 {object} models.RespuestaPaginada
+// @Failure 401 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router /mis-reservas [get]
+
+func (c *ClaseController) MisReservas() {
+	usuarioCorreo := c.Ctx.Input.GetData("usuario_correo")
+	if usuarioCorreo == nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+		c.Data["json"] = models.RespuestaErrorGeneral("No autenticado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	pagina, _ := strconv.Atoi(c.GetString("pagina", "1"))
+	porPagina, _ := strconv.Atoi(c.GetString("por_pagina", "10"))
+
+	if pagina < 1 {
+		pagina = 1
+	}
+	if porPagina < 1 || porPagina > 100 {
+		porPagina = 10
+	}
+
+	reservas, total, err := c.reservaService.ListByUsuario(usuarioCorreo.(string), pagina, porPagina)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al obtener reservas", err)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaPaginadaExitosa("Reservas obtenidas", reservas, pagina, porPagina, total)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
