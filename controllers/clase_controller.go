@@ -208,3 +208,42 @@ func (c *ClaseController) Eliminar() {
 // @Failure 409 {object} models.RespuestaError
 // @Failure 500 {object} models.RespuestaError
 // @router /reservar [post]
+
+func (c *ClaseController) Reservar() {
+	usuarioCorreo := c.Ctx.Input.GetData("usuario_correo")
+	if usuarioCorreo == nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+		c.Data["json"] = models.RespuestaErrorGeneral("No autenticado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	var req models.ReservaClaseRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("Datos inválidos", err)
+		c.ServeJSON()
+		return
+	}
+
+	req.UsuarioCorreo = usuarioCorreo.(string)
+
+	reserva, err := c.reservaService.Create(req)
+	if err != nil {
+		if err.Error() == "no hay cupos disponibles para esta fecha" {
+			c.Ctx.ResponseWriter.WriteHeader(http.StatusConflict)
+			c.Data["json"] = models.RespuestaErrorGeneral("No hay cupos disponibles", err)
+			c.ServeJSON()
+			return
+		}
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al reservar clase", err)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Clase reservada correctamente", reserva)
+	c.Ctx.ResponseWriter.WriteHeader(http.StatusCreated)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
