@@ -146,3 +146,122 @@ func (c *InstructorController) Crear() {
 
 
 
+// @Title Actualizar instructor
+// @Description Actualiza un instructor (solo administrador)
+// @Param	Authorization	header	string	true	"Bearer token"
+// @Param	id	path	int	true	"ID del instructor"
+// @Param	body	body 	models.InstructorUpdateRequest	true	"Datos a actualizar"
+// @Success 200 {object} models.RespuestaAPI
+// @Failure 400 {object} models.RespuestaError
+// @Failure 401 {object} models.RespuestaError
+// @Failure 403 {object} models.RespuestaError
+// @Failure 404 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router /:id [put]
+func (c *InstructorController) Actualizar() {
+	rol := c.Ctx.Input.GetData("usuario_rol")
+	if rol != models.RolAdministrador {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
+		c.Data["json"] = models.RespuestaErrorGeneral("Acceso denegado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	idStr := c.Ctx.Input.Param(":id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("ID inválido", err)
+		c.ServeJSON()
+		return
+	}
+
+	var req models.InstructorUpdateRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("Datos inválidos", err)
+		c.ServeJSON()
+		return
+	}
+
+	instructor, err := c.instructorService.Update(id, req)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al actualizar instructor", err)
+		c.ServeJSON()
+		return
+	}
+
+	if instructor == nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusNotFound)
+		c.Data["json"] = models.RespuestaErrorGeneral("Instructor no encontrado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Instructor actualizado correctamente", instructor)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
+
+// @Title Eliminar instructor
+// @Description Elimina un instructor (solo administrador)
+// @Param	Authorization	header	string	true	"Bearer token"
+// @Param	id	path	int	true	"ID del instructor"
+// @Success 200 {object} models.RespuestaAPI
+// @Failure 401 {object} models.RespuestaError
+// @Failure 403 {object} models.RespuestaError
+// @Failure 404 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router /:id [delete]
+func (c *InstructorController) Eliminar() {
+	rol := c.Ctx.Input.GetData("usuario_rol")
+	if rol != models.RolAdministrador {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
+		c.Data["json"] = models.RespuestaErrorGeneral("Acceso denegado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	idStr := c.Ctx.Input.Param(":id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("ID inválido", err)
+		c.ServeJSON()
+		return
+	}
+
+	instructor, err := c.instructorService.GetByID(id)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al verificar instructor", err)
+		c.ServeJSON()
+		return
+	}
+	if instructor == nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusNotFound)
+		c.Data["json"] = models.RespuestaErrorGeneral("Instructor no encontrado", nil)
+		c.ServeJSON()
+		return
+	}
+
+	err = c.instructorService.Delete(id)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al eliminar instructor", err)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Instructor eliminado correctamente", nil)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
+
+
+
+
+
+
+
