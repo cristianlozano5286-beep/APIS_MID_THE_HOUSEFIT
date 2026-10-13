@@ -27,3 +27,23 @@ type ClaseDisponibleRequest struct {
 	Duracion         string  `json:"duracion" binding:"required,max=20"`
 	Precio           float64 `json:"precio" binding:"required,min=0"`
 }
+
+type ClaseDisponibleUpdateRequest struct {
+	GimnasioID       *int     `json:"gimnasio_id" binding:"omitempty,min=1"`
+	TipoClase        *string  `json:"tipo_clase" binding:"omitempty,oneof=Spinning CrossFit Yoga Funcional Boxeo Pilates"`
+	InstructorNombre *string  `json:"instructor_nombre" binding:"omitempty,min=2,max=120"`
+	InstructorID     *int     `json:"instructor_id" binding:"omitempty,min=1"`
+	Hora             *string  `json:"hora" binding:"omitempty,max=20"`
+	Cupos            *int     `json:"cupos" binding:"omitempty,min=0"`
+	Duracion         *string  `json:"duracion" binding:"omitempty,max=20"`
+	Precio           *float64 `json:"precio" binding:"omitempty,min=0"`
+}
+
+const (
+	TipoClaseSpinning   = "Spinning"
+	TipoClaseCrossFit   = "CrossFit"
+	TipoClaseYoga       = "Yoga"
+	TipoClaseFuncional  = "Funcional"
+	TipoClaseBoxeo      = "Boxeo"
+	TipoClasePilates    = "Pilates"
+)
