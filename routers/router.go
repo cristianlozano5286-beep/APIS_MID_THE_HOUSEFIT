@@ -7,21 +7,18 @@ import (
 )
 
 func init() {
-	ns := beego.NewNamespace("/v1",
-		beego.NSNamespace("/object",
-			beego.NSInclude(
-				&controllers.ObjectController{},
-			),
-		),
-		beego.NSNamespace("/user",
-			beego.NSInclude(
-				&controllers.UserController{},
-			),
-		),
-	)
-	beego.AddNamespace(ns)
 
+	beego.Router("/api/guias-nutricionales", &controllers.GuiaNutricionalController{}, "get:ListarGuias")
+	beego.Router("/api/guias-nutricionales", &controllers.GuiaNutricionalController{}, "post:CrearGuia")
+	beego.Router("/api/guias-nutricionales/:id", &controllers.GuiaNutricionalController{}, "put:ActualizarGuia")
+	beego.Router("/api/guias-nutricionales/:id", &controllers.GuiaNutricionalController{}, "delete:EliminarGuia")
 	beego.Router("/api/clases", &controllers.ClaseController{}, "get:Listar")
 	beego.Router("/api/clases/:id", &controllers.ClaseController{}, "get:Ver")
-	beego.Router("/api/noticias", &controllers.NoticiaController{}, "get:Listar")
+	beego.Router("/api/guias-rutinas/:id", &controllers.RutinaController{}, "get:VerGuiaRutina")
+	beego.Router("/api/guias-rutinas/:id", &controllers.RutinaController{}, "put:ActualizarGuiaRutina")
+	beego.Router("/api/guias-rutinas/:id", &controllers.RutinaController{}, "delete:EliminarGuiaRutina")
+	beego.Router("/api/guias-rutinas/:id", &controllers.RutinaController{}, "post:CrearGuiaRutina")
+	
+
+	
 }
