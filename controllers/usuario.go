@@ -80,3 +80,33 @@ func (c *UserController) ActualizarRol() {
 		c.ServeJSON()
 		return
 	}
+
+	idStr := c.Ctx.Input.Param(":id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("ID inválido", err)
+		c.ServeJSON()
+		return
+	}
+
+	var req models.ActualizarRolRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("Datos inválidos", err)
+		c.ServeJSON()
+		return
+	}
+
+	err = c.authService.ActualizarRol(id, req.Rol)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al actualizar rol", err)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Rol actualizado correctamente", nil)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
