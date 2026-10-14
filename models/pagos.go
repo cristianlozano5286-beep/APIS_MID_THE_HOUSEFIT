@@ -11,3 +11,17 @@ type MetodoPago struct {
 	Descripcion string    `json:"descripcion" db:"descripcion"`
 	Disponible  bool      `json:"disponible" db:"disponible"`
 }
+
+type MetodoPagoRequest struct {
+	Nombre      string `json:"nombre" binding:"required,min=2,max=100"`
+	Icono       string `json:"icono" binding:"required,max=10"`
+	Descripcion string `json:"descripcion"`
+	Disponible  bool   `json:"disponible"`
+}
+
+type MetodoPagoUpdateRequest struct {
+	Nombre      *string `json:"nombre" binding:"omitempty,min=2,max=100"`
+	Icono       *string `json:"icono" binding:"omitempty,max=10"`
+	Descripcion *string `json:"descripcion" binding:"omitempty"`
+	Disponible  *bool   `json:"disponible" binding:"omitempty"`
+}
