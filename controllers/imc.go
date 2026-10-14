@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"api_mid_the_house_fit/models"
 	"api_mid_the_housefit/models"
 	"api_mid_the_housefit/services"
 
