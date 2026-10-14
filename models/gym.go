@@ -81,3 +81,5 @@ type GimnasioUpdateRequest struct {
 	Fotos       []string `json:"fotos"`
 	Servicios   []string `json:"servicios"`
 }
+
+//hora
