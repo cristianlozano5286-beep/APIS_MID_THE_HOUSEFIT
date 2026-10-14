@@ -1,30 +1,24 @@
-// @APIVersion 1.0.0
-// @Title beego Test API
-// @Description beego has a very cool tools to autogenerate documents for your API
-// @Contact astaxie@gmail.com
-// @TermsOfServiceUrl http://beego.me/
-// @License Apache 2.0
-// @LicenseUrl http://www.apache.org/licenses/LICENSE-2.0.html
 package routers
 
 import (
-	"APIS_MID_THE_HOUSEFIT/controllers"
+	"api_mid_the_housefit/controllers"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
 
 func init() {
-	ns := beego.NewNamespace("/v1",
-		beego.NSNamespace("/object",
-			beego.NSInclude(
-				&controllers.ObjectController{},
-			),
-		),
-		beego.NSNamespace("/user",
-			beego.NSInclude(
-				&controllers.UserController{},
-			),
-		),
-	)
-	beego.AddNamespace(ns)
+
+	beego.Router("/api/guias-nutricionales", &controllers.GuiaNutricionalController{}, "get:ListarGuias")
+	beego.Router("/api/guias-nutricionales", &controllers.GuiaNutricionalController{}, "post:CrearGuia")
+	beego.Router("/api/guias-nutricionales/:id", &controllers.GuiaNutricionalController{}, "put:ActualizarGuia")
+	beego.Router("/api/guias-nutricionales/:id", &controllers.GuiaNutricionalController{}, "delete:EliminarGuia")
+	beego.Router("/api/clases", &controllers.ClaseController{}, "get:Listar")
+	beego.Router("/api/clases/:id", &controllers.ClaseController{}, "get:Ver")
+	beego.Router("/api/guias-rutinas/:id", &controllers.RutinaController{}, "get:VerGuiaRutina")
+	beego.Router("/api/guias-rutinas/:id", &controllers.RutinaController{}, "put:ActualizarGuiaRutina")
+	beego.Router("/api/guias-rutinas/:id", &controllers.RutinaController{}, "delete:EliminarGuiaRutina")
+	beego.Router("/api/guias-rutinas/:id", &controllers.RutinaController{}, "post:CrearGuiaRutina")
+	
+
+	
 }
