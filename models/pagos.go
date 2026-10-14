@@ -25,3 +25,15 @@ type MetodoPagoUpdateRequest struct {
 	Descripcion *string `json:"descripcion" binding:"omitempty"`
 	Disponible  *bool   `json:"disponible" binding:"omitempty"`
 }
+
+type TransaccionRequest struct {
+	UsuarioCorreo string  `json:"usuario_correo" binding:"required,email,max=150"`
+	Concepto      string  `json:"concepto" binding:"required,min=2,max=200"`
+	Monto         float64 `json:"monto" binding:"required,min=0.01"`
+	MetodoPagoID  int     `json:"metodo_pago_id" binding:"required,min=1"`
+}
+
+type TransaccionResponse struct {
+	Transaccion
+	MetodoPago *MetodoPago `json:"metodo_pago"`
+}
