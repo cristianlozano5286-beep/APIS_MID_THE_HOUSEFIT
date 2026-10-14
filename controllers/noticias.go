@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"api_mid_the_house_fit/models"
-	"api_mid_the_house_fit/services"
+	"api_mid_the_housefit/models"
+	"api_mid_the_housefit/services"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -53,3 +53,45 @@ func (c *NoticiaController) Listar() {
 		c.ServeJSON()
 		return
 	}
+
+	response := models.RespuestaPaginadaExitosa("Noticias obtenidas", noticias, pagina, porPagina, total)
+	c.Data["json"] = response
+	c.ServeJSON()
+}
+
+// @Title Ver noticia
+// @Description Obtiene una noticia por ID
+// @Param	id	path	int	true	"ID de la noticia"
+// @Success 200 {object} models.RespuestaAPI
+// @Failure 404 {object} models.RespuestaError
+// @Failure 500 {object} models.RespuestaError
+// @router /:id [get]
+func (c *NoticiaController) Ver() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Data["json"] = models.RespuestaErrorGeneral("ID inválido", err)
+		c.ServeJSON()
+		return
+	}
+
+	noticia, err := c.noticiaService.GetByID(id)
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Data["json"] = models.RespuestaErrorGeneral("Error al obtener noticia", err)
+		c.ServeJSON()
+		return
+	}
+
+	if noticia == nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusNotFound)
+		c.Data["json"] = models.RespuestaErrorGeneral("Noticia no encontrada", nil)
+		c.ServeJSON()
+		return
+	}
+
+	response := models.RespuestaExitosa("Noticia obtenida", noticia)
+	c.Data["json"] = response
+	c.ServeJSON()
+}

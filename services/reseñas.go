@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"api_mid_the_house_fit/models"
+	"api_mid_the_housefit/models"
 )
 
 type ResenaService struct {
@@ -39,7 +39,7 @@ func (s *ResenaService) Create(req models.ResenaRequest) (*models.ResenaResponse
 	}
 
 	return &models.ResenaResponse{
-		Resena:  resena,
+		Resena:   resena,
 		Gimnasio: g,
 	}, nil
 }
@@ -66,7 +66,7 @@ func (s *ResenaService) GetByID(id int) (*models.ResenaResponse, error) {
 	}
 
 	return &models.ResenaResponse{
-		Resena:  resena,
+		Resena:   resena,
 		Gimnasio: g,
 	}, nil
 }
@@ -149,7 +149,7 @@ func (s *ResenaService) ListByGimnasio(gimnasioID int, pagina, porPagina int) ([
 		}
 
 		resenas = append(resenas, models.ResenaResponse{
-			Resena:  r,
+			Resena:   r,
 			Gimnasio: g,
 		})
 	}

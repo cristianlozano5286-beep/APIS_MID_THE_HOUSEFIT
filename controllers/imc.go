@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"api_mid_the_house_fit/models"
-	"api_mid_the_house_fit/services"
+	"api_mid_the_housefit/models"
+	"api_mid_the_housefit/services"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -57,7 +57,6 @@ func (c *IMCController) Calcular() {
 	c.ServeJSON()
 }
 
-
 // @Title Historial IMC
 // @Description Obtiene el historial de IMC del usuario autenticado
 // @Param	Authorization	header	string	true	"Bearer token"
@@ -98,11 +97,3 @@ func (c *IMCController) Historial() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
-
-
-
-
-
-
-
-

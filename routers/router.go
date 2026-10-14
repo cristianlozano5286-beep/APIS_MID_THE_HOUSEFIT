@@ -23,4 +23,5 @@ func init() {
 
 	beego.Router("/api/clases", &controllers.ClaseController{}, "get:Listar")
 	beego.Router("/api/clases/:id", &controllers.ClaseController{}, "get:Ver")
+	beego.Router("/api/noticias", &controllers.NoticiaController{}, "get:Listar")
 }
