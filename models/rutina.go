@@ -41,9 +41,6 @@ type RutinaUpdateRequest struct {
 }
 
 
-
-
-
 type RutinaCompleta struct {
 	Rutina
 	Ejercicios []RutinaEjercicio `json:"ejercicios"`
@@ -57,19 +54,3 @@ const (
 
 
 
-// Funciones constructoras de respuesta
-func RespuestaExitosa(message string, data interface{}) RespuestaAPI {
-	return RespuestaAPI{Success: true, Message: message, Data: data}
-}
-
-func RespuestaPaginadaExitosa(message string, data interface{}, pagina, porPagina int, total int64) RespuestaPaginada {
-	return RespuestaPaginada{Success: true, Message: message, Data: data, Total: total, Pagina: pagina}
-}
-
-func RespuestaErrorGeneral(message string, err error) RespuestaError {
-	errStr := ""
-	if err != nil {
-		errStr = err.Error()
-	}
-	return RespuestaError{Success: false, Message: message, Error: errStr}
-}
