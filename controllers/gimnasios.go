@@ -61,3 +61,44 @@ func (c *GimnasiosController) Ciudades() {
 func (c *GimnasiosController) Obtener() {
 	obtenerDeColeccion(&c.Controller, "gimnasios")
 }
+
+// POST /api/v1/gimnasios
+func (c *GimnasiosController) Crear() {
+	_, valido := exigirRol(&c.Controller, "Administrador")
+	if !valido {
+		return
+	}
+
+	var gimnasio models.Gimnasio
+
+	if !leerCuerpo(&c.Controller, &gimnasio) {
+		return
+	}
+
+	if strings.TrimSpace(gimnasio.Nombre) == "" || strings.TrimSpace(gimnasio.Direccion) == "" || strings.TrimSpace(gimnasio.Ciudad) == "" {
+		responderError(&c.Controller, 400, "El nombre, la dirección y la ciudad son obligatorios.")
+		return
+	}
+
+	crearEnColeccion(&c.Controller, "gimnasios", gimnasio)
+}
+
+// PUT /api/v1/gimnasios/:id
+func (c *GimnasiosController) Actualizar() {
+	_, valido := exigirRol(&c.Controller, "Administrador")
+	if !valido {
+		return
+	}
+
+	actualizarEnColeccion(&c.Controller, "gimnasios")
+}
+
+// DELETE /api/v1/gimnasios/:id
+func (c *GimnasiosController) Borrar() {
+	_, valido := exigirRol(&c.Controller, "Administrador")
+	if !valido {
+		return
+	}
+
+	borrarDeColeccion(&c.Controller, "gimnasios")
+}
