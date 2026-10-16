@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"api_mid_the_house_fit/models"
+	"api_mid_the_housefit/models"
+	"api_mid_the_housefit/services"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
