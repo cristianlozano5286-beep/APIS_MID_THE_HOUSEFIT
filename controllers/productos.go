@@ -1,140 +1,78 @@
 package controllers
 
 import (
+<<<<<<< HEAD
+	"strings"
+=======
 	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"api_mid_the_housefit/models"
 	"api_mid_the_housefit/services"
+>>>>>>> c329136a84f67cabe8f6c766b9b85bb8c59ea932
 
 	beego "github.com/beego/beego/v2/server/web"
+
+	"thehousefit_mid/models"
 )
 
-type ProductoController struct {
+type ProductosController struct {
 	beego.Controller
-	productoService *services.ProductoService
 }
 
-func (c *ProductoController) Prepare() {
-	c.productoService = services.NewProductoService()
+// GET /api/v1/productos
+func (c *ProductosController) Listar() {
+	var productos []models.Producto
+	if !listarColeccion(&c.Controller, "productos", &productos) {
+		return
+	}
+
+	responder(&c.Controller, 200, productos)
 }
 
-// @Title Listar productos
-// @Description Lista productos con filtros y paginación
-// @Param	pagina	query	int	false	"Página (default: 1)"
-// @Param	por_pagina	query	int	false	"Por página (default: 10)"
-// @Param	categoria	query	string	false	"Filtrar por categoría"
-// @Success 200 {object} models.RespuestaPaginada
-// @Failure 500 {object} models.RespuestaError
-// @router / [get]
-func (c *ProductoController) Listar() {
-	pagina, _ := strconv.Atoi(c.GetString("pagina", "1"))
-	porPagina, _ := strconv.Atoi(c.GetString("por_pagina", "10"))
-	categoria := c.GetString("categoria")
-
-	if pagina < 1 {
-		pagina = 1
-	}
-	if porPagina < 1 || porPagina > 100 {
-		porPagina = 10
-	}
-
-	filters := map[string]interface{}{}
-	if categoria != "" {
-		filters["categoria"] = categoria
-	}
-
-	productos, total, err := c.productoService.List(filters, pagina, porPagina)
-	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
-		c.Data["json"] = models.RespuestaErrorGeneral("Error al listar productos", err)
-		c.ServeJSON()
+// POST /api/v1/productos
+func (c *ProductosController) Crear() {
+	_, valido := exigirRol(&c.Controller, "Administrador")
+	if !valido {
 		return
 	}
 
-	response := models.RespuestaPaginadaExitosa("Productos obtenidos", productos, pagina, porPagina, total)
-	c.Data["json"] = response
-	c.ServeJSON()
+	var producto models.Producto
+
+	if !leerCuerpo(&c.Controller, &producto) {
+		return
+	}
+
+	if strings.TrimSpace(producto.Nombre) == "" {
+		responderError(&c.Controller, 400, "El nombre es obligatorio.")
+		return
+	}
+
+	crearEnColeccion(&c.Controller, "productos", producto)
 }
 
-// @Title Ver producto
-// @Description Obtiene un producto por ID
-// @Param	id	path	int	true	"ID del producto"
-// @Success 200 {object} models.RespuestaAPI
-// @Failure 404 {object} models.RespuestaError
-// @Failure 500 {object} models.RespuestaError
-// @router /:id [get]
-func (c *ProductoController) Ver() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
-		c.Data["json"] = models.RespuestaErrorGeneral("ID inválido", err)
-		c.ServeJSON()
+// PUT /api/v1/productos/:id
+func (c *ProductosController) Actualizar() {
+	_, valido := exigirRol(&c.Controller, "Administrador")
+	if !valido {
 		return
 	}
 
-	producto, err := c.productoService.GetByID(id)
-	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
-		c.Data["json"] = models.RespuestaErrorGeneral("Error al obtener producto", err)
-		c.ServeJSON()
-		return
-	}
-
-	if producto == nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusNotFound)
-		c.Data["json"] = models.RespuestaErrorGeneral("Producto no encontrado", nil)
-		c.ServeJSON()
-		return
-	}
-
-	response := models.RespuestaExitosa("Producto obtenido", producto)
-	c.Data["json"] = response
-	c.ServeJSON()
+	actualizarEnColeccion(&c.Controller, "productos")
 }
 
-// @Title Crear producto
-// @Description Crea un nuevo producto (solo administrador)
-// @Param	Authorization	header	string	true	"Bearer token"
-// @Param	body	body 	models.ProductoRequest	true	"Datos del producto"
-// @Success 201 {object} models.RespuestaAPI
-// @Failure 400 {object} models.RespuestaError
-// @Failure 401 {object} models.RespuestaError
-// @Failure 403 {object} models.RespuestaError
-// @Failure 500 {object} models.RespuestaError
-// @router / [post]
-func (c *ProductoController) Crear() {
-	rol := c.Ctx.Input.GetData("usuario_rol")
-	if rol != models.RolAdministrador {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
-		c.Data["json"] = models.RespuestaErrorGeneral("Acceso denegado", nil)
-		c.ServeJSON()
+// DELETE /api/v1/productos/:id
+func (c *ProductosController) Borrar() {
+	_, valido := exigirRol(&c.Controller, "Administrador")
+	if !valido {
 		return
 	}
 
-	var req models.ProductoRequest
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &req); err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
-		c.Data["json"] = models.RespuestaErrorGeneral("Datos inválidos", err)
-		c.ServeJSON()
-		return
-	}
-
-	producto, err := c.productoService.Create(req)
-	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
-		c.Data["json"] = models.RespuestaErrorGeneral("Error al crear producto", err)
-		c.ServeJSON()
-		return
-	}
-
-	response := models.RespuestaExitosa("Producto creado correctamente", producto)
-	c.Ctx.ResponseWriter.WriteHeader(http.StatusCreated)
-	c.Data["json"] = response
-	c.ServeJSON()
+	borrarDeColeccion(&c.Controller, "productos")
 }
+<<<<<<< HEAD
+=======
 
 // @Title Actualizar producto
 // @Description Actualiza un producto (solo administrador)
@@ -248,3 +186,4 @@ func (c *ProductoController) Eliminar() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
+>>>>>>> c329136a84f67cabe8f6c766b9b85bb8c59ea932
