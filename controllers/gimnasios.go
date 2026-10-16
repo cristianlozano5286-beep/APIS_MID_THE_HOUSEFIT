@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"sort"
+	"strconv"
 	"strings"
 
 	beego "github.com/beego/beego/v2/server/web"
 
 	"thehousefit_mid/models"
+	"thehousefit_mid/services"
 )
 
 type GimnasiosController struct {
@@ -101,4 +103,89 @@ func (c *GimnasiosController) Borrar() {
 	}
 
 	borrarDeColeccion(&c.Controller, "gimnasios")
+}
+
+// GET /api/v1/favoritos
+// los gimnasios que marco la persona que inicio sesion
+func (c *GimnasiosController) ListarFavoritos() {
+	sesion, valido := exigirSesion(&c.Controller)
+	if !valido {
+		return
+	}
+
+	var favoritos []models.Favorito
+	if !listarColeccion(&c.Controller, "favoritos", &favoritos) {
+		return
+	}
+
+	var gimnasios []models.Gimnasio
+	if !listarColeccion(&c.Controller, "gimnasios", &gimnasios) {
+		return
+	}
+
+	resultado := []models.Gimnasio{}
+	for _, f := range favoritos {
+		if strconv.Itoa(f.UsuarioId) != sesion.ID {
+			continue
+		}
+		for _, g := range gimnasios {
+			if g.Id == f.GimnasioId {
+				resultado = append(resultado, g)
+			}
+		}
+	}
+
+	responder(&c.Controller, 200, resultado)
+}
+
+// POST /api/v1/gimnasios/:id/favorito
+// si ya era favorito lo quita, si no lo agrega
+func (c *GimnasiosController) AlternarFavorito() {
+	sesion, valido := exigirSesion(&c.Controller)
+	if !valido {
+		return
+	}
+
+	id, valido := leerId(&c.Controller)
+	if !valido {
+		return
+	}
+	gimnasioId, _ := strconv.Atoi(id)
+	usuarioId, _ := strconv.Atoi(sesion.ID)
+
+	crud := services.NuevoServicioCrud()
+
+	// el gimnasio tiene que existir
+	var gimnasio models.Gimnasio
+	err := crud.Obtener("gimnasios", id, &gimnasio)
+	if err != nil {
+		errorCrud(&c.Controller, err)
+		return
+	}
+
+	var favoritos []models.Favorito
+	if !listarColeccion(&c.Controller, "favoritos", &favoritos) {
+		return
+	}
+
+	for _, f := range favoritos {
+		if f.UsuarioId == usuarioId && f.GimnasioId == gimnasioId {
+			err = crud.Borrar("favoritos", strconv.Itoa(f.Id))
+			if err != nil {
+				errorCrud(&c.Controller, err)
+				return
+			}
+			responder(&c.Controller, 200, map[string]interface{}{"esFavorito": false})
+			return
+		}
+	}
+
+	nuevo := models.Favorito{UsuarioId: usuarioId, GimnasioId: gimnasioId}
+	err = crud.Crear("favoritos", nuevo, nil)
+	if err != nil {
+		errorCrud(&c.Controller, err)
+		return
+	}
+
+	responder(&c.Controller, 200, map[string]interface{}{"esFavorito": true})
 }
