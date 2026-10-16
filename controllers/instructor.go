@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"api_mid_the_house_fit/models"
-	"api_mid_the_house_fit/services"
+	"api_mid_the_housefit/models"
+	"api_mid_the_housefit/services"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -64,7 +64,6 @@ func (c *InstructorController) Listar() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
-
 
 // @Title Ver instructor
 // @Description Obtiene un instructor por ID
@@ -143,8 +142,6 @@ func (c *InstructorController) Crear() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
-
-
 
 // @Title Actualizar instructor
 // @Description Actualiza un instructor (solo administrador)
@@ -258,10 +255,3 @@ func (c *InstructorController) Eliminar() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
-
-
-
-
-
-
-

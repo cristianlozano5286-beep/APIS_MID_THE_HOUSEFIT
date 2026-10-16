@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"api_mid_the_house_fit/models"
-	"api_mid_the_house_fit/services"
+	"api_mid_the_housefit/models"
+	"api_mid_the_housefit/services"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -214,8 +214,8 @@ func (c *ResenaController) Promedio() {
 	}
 
 	response := models.RespuestaExitosa("Promedio obtenido", map[string]interface{}{
-		"promedio":  promedio,
-		"total":     total,
+		"promedio": promedio,
+		"total":    total,
 	})
 	c.Data["json"] = response
 	c.ServeJSON()
