@@ -28,46 +28,4 @@ func init() {
 	// ---------- usuarios y roles (solo Administrador) ----------
 	beego.Router("/api/v1/usuarios", &controllers.UsuariosController{}, "get:Listar")
 	beego.Router("/api/v1/usuarios/:id/rol", &controllers.UsuariosController{}, "put:CambiarRol")
-	beego.Router("/api/v1/resumen", &controllers.UsuariosController{}, "get:Resumen")
-
-	// ---------- gimnasios y favoritos ----------
-	beego.Router("/api/v1/gimnasios", &controllers.GimnasiosController{}, "get:Listar;post:Crear")
-	beego.Router("/api/v1/gimnasios/ciudades", &controllers.GimnasiosController{}, "get:Ciudades")
-	beego.Router("/api/v1/gimnasios/:id", &controllers.GimnasiosController{}, "get:Obtener;put:Actualizar;delete:Borrar")
-	beego.Router("/api/v1/gimnasios/:id/favorito", &controllers.GimnasiosController{}, "post:AlternarFavorito")
-	beego.Router("/api/v1/favoritos", &controllers.GimnasiosController{}, "get:ListarFavoritos")
-
-	// ---------- instructores y tienda ----------
-	beego.Router("/api/v1/instructores", &controllers.InstructoresController{}, "get:Listar;post:Crear")
-	beego.Router("/api/v1/instructores/:id", &controllers.InstructoresController{}, "put:Actualizar;delete:Borrar")
-	beego.Router("/api/v1/productos", &controllers.ProductosController{}, "get:Listar;post:Crear")
-	beego.Router("/api/v1/productos/:id", &controllers.ProductosController{}, "put:Actualizar;delete:Borrar")
-
-	// ---------- clases y reservas ----------
-	beego.Router("/api/v1/clases", &controllers.ClasesController{}, "get:Listar;post:Crear")
-	beego.Router("/api/v1/clases/:id", &controllers.ClasesController{}, "delete:Borrar")
-	beego.Router("/api/v1/clases/:id/reservar", &controllers.ClasesController{}, "post:Reservar")
-	beego.Router("/api/v1/reservas", &controllers.ClasesController{}, "get:MisReservas")
-	beego.Router("/api/v1/reservas/:id/cancelar", &controllers.ClasesController{}, "put:CancelarReserva")
-
-	// ---------- blog ----------
-	beego.Router("/api/v1/resenas", &controllers.BlogController{}, "get:ListarResenas;post:CrearResena")
-	beego.Router("/api/v1/resenas/promedio/:gimnasioId", &controllers.BlogController{}, "get:Promedio")
-	beego.Router("/api/v1/resenas/:id", &controllers.BlogController{}, "delete:BorrarResena")
-	beego.Router("/api/v1/noticias", &controllers.BlogController{}, "get:ListarNoticias;post:CrearNoticia")
-	beego.Router("/api/v1/noticias/:id", &controllers.BlogController{}, "delete:BorrarNoticia")
-
-	// ---------- rutinas, guias e IMC ----------
-	beego.Router("/api/v1/rutinas", &controllers.ContenidoController{}, "get:ListarRutinas;post:CrearRutina")
-	beego.Router("/api/v1/rutinas/:id", &controllers.ContenidoController{}, "delete:BorrarRutina")
-	beego.Router("/api/v1/guias-fisicas", &controllers.ContenidoController{}, "get:ListarGuiasFisicas;post:CrearGuiaFisica")
-	beego.Router("/api/v1/guias-fisicas/:id", &controllers.ContenidoController{}, "delete:BorrarGuiaFisica")
-	beego.Router("/api/v1/guias-nutricionales", &controllers.ContenidoController{}, "get:ListarGuiasNutricionales;post:CrearGuiaNutricional")
-	beego.Router("/api/v1/guias-nutricionales/:id", &controllers.ContenidoController{}, "delete:BorrarGuiaNutricional")
-	beego.Router("/api/v1/imc", &controllers.ContenidoController{}, "get:CalcularIMC")
-
-	// ---------- pagos ----------
-	beego.Router("/api/v1/pagos/metodos", &controllers.PagosController{}, "get:ListarMetodos")
-	beego.Router("/api/v1/pagos/transacciones", &controllers.PagosController{}, "get:MisTransacciones")
-	beego.Router("/api/v1/pagos", &controllers.PagosController{}, "post:Pagar")
 }
