@@ -21,4 +21,5 @@ func init() {
 	beego.Router("/api/v1/guias-fisicas/:id", &controllers.ContenidoController{}, "delete:BorrarGuiaFisica")
 	beego.Router("/api/v1/guias-nutricionales", &controllers.ContenidoController{}, "get:ListarGuiasNutricionales;post:CrearGuiaNutricional")
 	beego.Router("/api/v1/guias-nutricionales/:id", &controllers.ContenidoController{}, "delete:BorrarGuiaNutricional")
+	beego.Router("/api/v1/imc", &controllers.ContenidoController{}, "get:CalcularIMC")
 }

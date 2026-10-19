@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"math"
+	"strconv"
 	"strings"
 
 	beego "github.com/beego/beego/v2/server/web"
@@ -146,4 +148,51 @@ func (c *ContenidoController) BorrarGuiaNutricional() {
 	}
 
 	borrarDeColeccion(&c.Controller, "guias-nutricionales")
+}
+
+// GET /api/v1/imc?peso=70&estatura=1.75
+// calcula el IMC y devuelve la guia nutricional que le toca
+func (c *ContenidoController) CalcularIMC() {
+	peso, errPeso := strconv.ParseFloat(c.GetString("peso"), 64)
+	estatura, errEstatura := strconv.ParseFloat(c.GetString("estatura"), 64)
+
+	if errPeso != nil || errEstatura != nil || peso <= 0 || estatura <= 0 {
+		responderError(&c.Controller, 400, "Escribe el peso en kg y la estatura en metros.")
+		return
+	}
+
+	imc := math.Round(peso/(estatura*estatura)*10) / 10
+	categoria := clasificarIMC(imc)
+
+	var guias []models.GuiaNutricional
+	if !listarColeccion(&c.Controller, "guias-nutricionales", &guias) {
+		return
+	}
+
+	// puede que todavia no haya guia para esa categoria
+	var guia *models.GuiaNutricional
+	for i := range guias {
+		if guias[i].CategoriaIMC == categoria {
+			guia = &guias[i]
+		}
+	}
+
+	responder(&c.Controller, 200, map[string]interface{}{
+		"imc":       imc,
+		"categoria": categoria,
+		"guia":      guia,
+	})
+}
+
+func clasificarIMC(imc float64) string {
+	if imc < 18.5 {
+		return "Bajo peso"
+	}
+	if imc < 25 {
+		return "Peso normal"
+	}
+	if imc < 30 {
+		return "Sobrepeso"
+	}
+	return "Obesidad"
 }
