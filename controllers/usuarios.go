@@ -72,3 +72,40 @@ func (c *UsuariosController) CambiarRol() {
 	actualizado.Password = ""
 	responder(&c.Controller, 200, actualizado)
 }
+
+// GET /api/v1/resumen
+// los numeros que muestra el dashboard del administrador
+func (c *UsuariosController) Resumen() {
+	_, valido := exigirRol(&c.Controller, "Administrador")
+	if !valido {
+		return
+	}
+
+	colecciones := []string{"usuarios", "gimnasios", "instructores", "productos", "clases", "reservas-clases", "resenas", "noticias"}
+
+	resumen := map[string]interface{}{}
+
+	for _, coleccion := range colecciones {
+		var filas []map[string]interface{}
+		if !listarColeccion(&c.Controller, coleccion, &filas) {
+			return
+		}
+		resumen[coleccion] = len(filas)
+	}
+
+	var transacciones []models.Transaccion
+	if !listarColeccion(&c.Controller, "transacciones", &transacciones) {
+		return
+	}
+
+	ingresos := 0.0
+	for _, t := range transacciones {
+		if t.Estado == "Aprobado" {
+			ingresos += t.Monto
+		}
+	}
+	resumen["transacciones"] = len(transacciones)
+	resumen["ingresos"] = ingresos
+
+	responder(&c.Controller, 200, resumen)
+}
