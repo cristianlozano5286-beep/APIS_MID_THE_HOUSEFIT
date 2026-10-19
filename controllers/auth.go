@@ -15,8 +15,8 @@ import (
 	beego "github.com/beego/beego/v2/server/web"
 	"golang.org/x/crypto/bcrypt"
 
-	"thehousefit_mid/models"
-	"thehousefit_mid/services"
+	"api_mid_the_housefit/models"
+	"api_mid_the_housefit/services"
 )
 
 // los codigos se guardan en la ram, no en la base

@@ -3,7 +3,7 @@ package routers
 import (
 	beego "github.com/beego/beego/v2/server/web"
 
-	"thehousefit_mid/controllers"
+	"api_mid_the_housefit/controllers"
 )
 
 func init() {

@@ -7,8 +7,8 @@ import (
 
 	beego "github.com/beego/beego/v2/server/web"
 
-	"thehousefit_mid/models"
-	"thehousefit_mid/services"
+	"api_mid_the_housefit/models"
+	"api_mid_the_housefit/services"
 )
 
 type GimnasiosController struct {

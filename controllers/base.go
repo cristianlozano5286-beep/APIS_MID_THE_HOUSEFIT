@@ -9,7 +9,7 @@ import (
 
 	beego "github.com/beego/beego/v2/server/web"
 
-	"thehousefit_mid/services"
+	"api_mid_the_housefit/services"
 )
 
 func responder(c *beego.Controller, codigo int, datos interface{}) {

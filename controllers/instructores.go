@@ -5,7 +5,7 @@ import (
 
 	beego "github.com/beego/beego/v2/server/web"
 
-	"thehousefit_mid/models"
+	"api_mid_the_housefit/models"
 )
 
 type InstructoresController struct {

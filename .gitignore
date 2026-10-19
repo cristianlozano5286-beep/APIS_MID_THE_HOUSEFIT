@@ -1,0 +1,11 @@
+# Credenciales OAuth y tokens de acceso
+/credentials/
+/token/
+
+# Binarios generados
+*.exe
+
+# Variables locales de entorno
+.env
+.env.*
+!.env.example

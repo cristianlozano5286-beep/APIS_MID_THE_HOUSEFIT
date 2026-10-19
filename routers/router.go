@@ -4,7 +4,7 @@ import (
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/filter/cors"
 
-	"thehousefit_mid/controllers"
+	"api_mid_the_housefit/controllers"
 )
 
 func init() {
