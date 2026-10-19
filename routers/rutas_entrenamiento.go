@@ -17,4 +17,8 @@ func init() {
 	// ---------- rutinas, guias e IMC ----------
 	beego.Router("/api/v1/rutinas", &controllers.ContenidoController{}, "get:ListarRutinas;post:CrearRutina")
 	beego.Router("/api/v1/rutinas/:id", &controllers.ContenidoController{}, "delete:BorrarRutina")
+	beego.Router("/api/v1/guias-fisicas", &controllers.ContenidoController{}, "get:ListarGuiasFisicas;post:CrearGuiaFisica")
+	beego.Router("/api/v1/guias-fisicas/:id", &controllers.ContenidoController{}, "delete:BorrarGuiaFisica")
+	beego.Router("/api/v1/guias-nutricionales", &controllers.ContenidoController{}, "get:ListarGuiasNutricionales;post:CrearGuiaNutricional")
+	beego.Router("/api/v1/guias-nutricionales/:id", &controllers.ContenidoController{}, "delete:BorrarGuiaNutricional")
 }

@@ -63,3 +63,87 @@ func (c *ContenidoController) BorrarRutina() {
 
 	borrarDeColeccion(&c.Controller, "rutinas")
 }
+
+// GET /api/v1/guias-fisicas
+func (c *ContenidoController) ListarGuiasFisicas() {
+	var guias []models.GuiaFisica
+	if !listarColeccion(&c.Controller, "guias-fisicas", &guias) {
+		return
+	}
+
+	responder(&c.Controller, 200, guias)
+}
+
+// POST /api/v1/guias-fisicas
+func (c *ContenidoController) CrearGuiaFisica() {
+	_, valido := exigirRol(&c.Controller, "Administrador", "Entrenador")
+	if !valido {
+		return
+	}
+
+	var guia models.GuiaFisica
+
+	if !leerCuerpo(&c.Controller, &guia) {
+		return
+	}
+
+	if strings.TrimSpace(guia.Titulo) == "" || strings.TrimSpace(guia.Contenido) == "" {
+		responderError(&c.Controller, 400, "El título y el contenido son obligatorios.")
+		return
+	}
+
+	guia.FechaPublicacion = hoy()
+
+	crearEnColeccion(&c.Controller, "guias-fisicas", guia)
+}
+
+// DELETE /api/v1/guias-fisicas/:id
+func (c *ContenidoController) BorrarGuiaFisica() {
+	_, valido := exigirRol(&c.Controller, "Administrador", "Entrenador")
+	if !valido {
+		return
+	}
+
+	borrarDeColeccion(&c.Controller, "guias-fisicas")
+}
+
+// GET /api/v1/guias-nutricionales
+func (c *ContenidoController) ListarGuiasNutricionales() {
+	var guias []models.GuiaNutricional
+	if !listarColeccion(&c.Controller, "guias-nutricionales", &guias) {
+		return
+	}
+
+	responder(&c.Controller, 200, guias)
+}
+
+// POST /api/v1/guias-nutricionales
+func (c *ContenidoController) CrearGuiaNutricional() {
+	_, valido := exigirRol(&c.Controller, "Administrador", "Entrenador")
+	if !valido {
+		return
+	}
+
+	var guia models.GuiaNutricional
+
+	if !leerCuerpo(&c.Controller, &guia) {
+		return
+	}
+
+	if strings.TrimSpace(guia.Titulo) == "" || strings.TrimSpace(guia.Recomendaciones) == "" {
+		responderError(&c.Controller, 400, "El título y las recomendaciones son obligatorios.")
+		return
+	}
+
+	crearEnColeccion(&c.Controller, "guias-nutricionales", guia)
+}
+
+// DELETE /api/v1/guias-nutricionales/:id
+func (c *ContenidoController) BorrarGuiaNutricional() {
+	_, valido := exigirRol(&c.Controller, "Administrador", "Entrenador")
+	if !valido {
+		return
+	}
+
+	borrarDeColeccion(&c.Controller, "guias-nutricionales")
+}
