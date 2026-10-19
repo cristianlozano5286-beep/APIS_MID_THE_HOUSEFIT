@@ -13,4 +13,8 @@ func init() {
 	beego.Router("/api/v1/clases/:id/reservar", &controllers.ClasesController{}, "post:Reservar")
 	beego.Router("/api/v1/reservas", &controllers.ClasesController{}, "get:MisReservas")
 	beego.Router("/api/v1/reservas/:id/cancelar", &controllers.ClasesController{}, "put:CancelarReserva")
+
+	// ---------- rutinas, guias e IMC ----------
+	beego.Router("/api/v1/rutinas", &controllers.ContenidoController{}, "get:ListarRutinas;post:CrearRutina")
+	beego.Router("/api/v1/rutinas/:id", &controllers.ContenidoController{}, "delete:BorrarRutina")
 }
