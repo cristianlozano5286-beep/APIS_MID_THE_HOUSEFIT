@@ -13,5 +13,6 @@ func init() {
 	beego.Router("/api/v1/gimnasios/:id", &controllers.GimnasiosController{}, "get:Obtener;put:Actualizar;delete:Borrar")
 	beego.Router("/api/v1/gimnasios/:id/favorito", &controllers.GimnasiosController{}, "post:AlternarFavorito")
 	beego.Router("/api/v1/favoritos", &controllers.GimnasiosController{}, "get:ListarFavoritos")
-	beego.Router("/api/v1/instructores", &controllers.InstructoresController{}, "get:Listar")
+	beego.Router("/api/v1/instructores", &controllers.InstructoresController{}, "get:Listar;post:Crear")
+	beego.Router("/api/v1/instructores/:id", &controllers.InstructoresController{}, "put:Actualizar;delete:Borrar")
 }
