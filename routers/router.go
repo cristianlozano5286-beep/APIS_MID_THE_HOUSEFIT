@@ -28,4 +28,5 @@ func init() {
 	// ---------- usuarios y roles (solo Administrador) ----------
 	beego.Router("/api/v1/usuarios", &controllers.UsuariosController{}, "get:Listar")
 	beego.Router("/api/v1/usuarios/:id/rol", &controllers.UsuariosController{}, "put:CambiarRol")
+	beego.Router("/api/v1/resumen", &controllers.UsuariosController{}, "get:Resumen")
 }
